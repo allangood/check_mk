@@ -1,0 +1,9 @@
+
+check_info["check_puppet_agent.lastrun"] = {
+  'check_function':             check_puppet_agent_lastrun,
+  'inventory_function':         inventory_puppet_agent_lastrun,
+  'service_description':        'Puppet Agent %s',
+  'group':                      'puppet_agent',
+  'has_perfdata':               True,
+  'includes':			[ 'check_puppet_agent.include' ],
+}

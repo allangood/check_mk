@@ -1,0 +1,28 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD: allan.cassaro@gmail.com
+#
+
+def inventory_ts(info):
+    inventory = []
+    if len(info) > 0 and len(info[0]) > 0:
+        inventory.append(("Firmware",[]))
+    return inventory
+
+def check_ts(item, params, info):
+    if (item == "Firmware"):
+        if len(info) > 0 and len(info[0]) > 0:
+            value = info[0][0]
+            return (0, "OK - Firmware version: %s" %(value))
+    return (3, "UNKNOWN - Value not know: %s" % info)
+
+check_info["check_ts3200_firmware"] = {
+    'check_function':		check_ts,
+    'inventory_function':	inventory_ts,
+    'service_description':	'Tape Library TS3200 %s',
+    'group':			'ts3200',
+    'has_perfdata':		False,
+}
+
+snmp_info["check_ts3200_firmware"] = ( ".1.3.6.1.4.1.2.6.211", [ "3.1.1.9.1" ] )

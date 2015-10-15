@@ -1,0 +1,9 @@
+
+check_info["check_puppet_agent.events"] = {
+  'check_function':             check_puppet_agent_events,
+  'inventory_function':         inventory_puppet_agent_events,
+  'service_description':        'Puppet Agent %s',
+  'group':                      'puppet_agent',
+  'has_perfdata':               True,
+  'includes':			[ 'check_puppet_agent.include' ],
+}

@@ -1,0 +1,33 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD
+# Plugin writed by Allan GooD
+#
+# Example output
+#<<<linux_detect_virtual>>>
+#Manufacturer : Oracle Corporation
+#Model : VirtualBox
+#BIOSVersion : 1.2
+#IsVirtualMachine : True
+
+def inv_lnx_detect_virtual(info):
+    vendor,model,biosversion,isvirtual = ['','','','']
+    node = inv_tree("hardware.system.")
+    for line in info:
+        if line[0] == 'Manufacturer':
+	     vendor = ' '.join(line[2:])
+        elif line[0] == 'Model':
+	     model = ' '.join(line[2:])
+        elif line[0] == 'BIOSVersion':
+	     biosversion = ' '.join(line[2:])
+        elif line[0] == 'IsVirtualMachine':
+	     isvirtual = ' '.join(line[2:])
+    if (isvirtual == "True"):
+        node["virtualization vendor"] = vendor
+        node["virtualization model"] = model
+        node["virtual bios version"] = biosversion
+    
+inv_info['lnx_detect_virtual'] = {
+   "inv_function"           : inv_lnx_detect_virtual,
+}

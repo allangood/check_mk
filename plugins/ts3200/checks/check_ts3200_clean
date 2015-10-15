@@ -1,0 +1,43 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD: allan.cassaro@gmail.com
+#
+
+cleanstate_severity_level = (1,1)
+
+def inventory_ts(info):
+    inventory = []
+    if len(info) > 0 and len(info[0]) > 0:
+        inventory.append(("Clean State",cleanstate_severity_level))
+    return inventory
+
+def check_ts(item, params, info):
+    warn, crit = params
+    drivesdirty = 0
+    tmp = []
+    tmp = [x[0] for x in info]
+    if (item == "Clean State"):
+        keys = tmp[1:][::2]
+        values = tmp[0:][::2]
+        for i in range(len(keys)):
+            if int(values[i]) == 34:
+                drivesdirty += 1
+            warn,crit = cleanstate_severity_level
+            if (drivesdirty > crit):
+                return (2, "CRITICAL - Number of drivers neeeding to be cleaned: %s" %(drivesdirty))
+            elif (drivesdirty > warn):
+                return (1, "CRITICAL - Number of drivers neeeding to be cleaned: %s" %(drivesdirty))
+            else:
+                return (0, "OK - Number of drivers neeeding to be cleaned: %s" %(drivesdirty))
+    return (3, "UNKNOWN - Not implemented")
+
+check_info["check_ts3200_clean"] = {
+    'check_function':		check_ts,
+    'inventory_function':	inventory_ts,
+    'service_description':	'Tape Library TS3200 %s',
+    'group':			'ts3200',
+    'has_perfdata':		False,
+}
+
+snmp_info["check_ts3200_clean"] = ( ".1.3.6.1.4.1.2.6.211", [ "3.2.1.2" ] )

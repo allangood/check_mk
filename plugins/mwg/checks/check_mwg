@@ -1,0 +1,80 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD: allan.cassaro@gmail.com
+#
+'''
+From: https://thwack.solarwinds.com/docs/DOC-168937
+
+Number of Detected Infections
+     This monitor returns the number of infections detected by the McAfee Gateway Antimalware Engine. This value should be as low as possible.
+     OID: 1.3.6.1.4.1.1230.2.7.2.1.2.0
+
+Number of Not Blocked Connections
+     This monitor returns the number of connections that not have been blocked.
+     OID: 1.3.6.1.4.1.1230.2.7.2.1.3.0
+
+Number of Blocked Connections by Anti-Malware
+     This monitor returns the number of connections blocked by Anti-Malware. This value should be as low as possible.
+     OID: 1.3.6.1.4.1.1230.2.7.2.1.5.0
+
+Number of Blocked Connections by Media-Type Filter
+     This monitor returns the number of connections that have been blocked by the Media-Type filter. This value should be as low as possible.
+     OID: 1.3.6.1.4.1.1230.2.7.2.1.6.0
+
+HTTP: Number requests
+     This monitor returns the number of HTTP requests.
+     OID: 1.3.6.1.4.1.1230.2.7.2.2.1.0
+
+HTTPS: Number requests
+     This monitor returns the number of HTTPS requests.
+     OID: 1.3.6.1.4.1.1230.2.7.2.3.1.0
+
+Currently Connected Clients
+     This monitor returns the number of currently connected clients.
+     OID: 1.3.6.1.4.1.1230.2.7.2.5.2.0
+'''
+
+snmp_item = []
+snmp_item.append('Infections Detected')
+snmp_item.append('Connections Allowed')
+snmp_item.append('Connections Blocked by Anti-Malware')
+snmp_item.append('Connections Blocked by Media-Type Filter')
+snmp_item.append('HTTP requests')
+snmp_item.append('HTTPS requests')
+snmp_item.append('Clients Connected')
+
+def inventory_mwg(info):
+    inventory = []
+    if len(info) > 0 and len(info[0]) > 0:
+        for i in snmp_item:
+            inventory.append((i,[]))
+    return inventory
+
+def check_mwg(item, params, info):
+    import locale
+    unit = ''
+    if item in snmp_item:
+        itemvalue = info[0][snmp_item.index(item)]
+        try:
+            locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+            humanvalue = locale.format("%d", int(itemvalue), grouping=True)
+        except locale.Error:
+            humanvalue = itemvalue
+        if item.find('Infections') >= 0: unit = 'Infections'
+        elif item.find('Connections') >= 0: unit = 'Connections'
+        elif item.find('requests') >= 0: unit = 'Requests'
+        elif item.find('Clients') >= 0: unit = 'Clients'
+        perfdata = [('mwg_%s' % item.replace(' ','_').lower(),itemvalue)]
+        return (0,'%s %s' % (humanvalue,unit), perfdata)
+    return (3,'Not Implemented')
+
+check_info["check_mwg"] = {
+    'check_function':		check_mwg,
+    'inventory_function':	inventory_mwg,
+    'service_description':	'MWG %s',
+    'group':			'mwg',
+    'has_perfdata':		True,
+}
+
+snmp_info["check_mwg"] = ( '.1.3.6.1.4.1.1230.2.7.2', [ '1.2.0', '1.3.0', '1.5.0', '1.6.0', '2.1.0', '3.1.0', '5.2.0' ] )

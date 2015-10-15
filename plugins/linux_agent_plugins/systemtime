@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "<<<systemtime>>>"
+date +%s
+
+exit 0

@@ -1,0 +1,47 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+'''
+Author: Allan GooD: allan.cassaro@gmail.com
+
+Output sample:
+<<<dfs_state>>>
+ReplicatedFolderName  ReplicationGroupName     State
+XXXXXXX               SRWXXXXXXX1-SVXXXXXXXX2  4
+XXXXXXX               SRXXXXXXXX1-SVXXXXXXXX2  4
+XXXXXXX               SRXXXXXXXX1-SVXXXXXXXX2  4
+XXXX                  SRXXXXXXXX1-SVXXXXXXXX2  4
+
+'''
+
+def inventory_dfs_state(info):
+    inventory = []
+    for line in info:
+        if (len(line) == 3) and (line[2].isdigit()):
+            inventory.append( (line[0],()) )
+    return inventory
+
+def check_dfs_state(item, params, info):
+    for line in info:
+        if line[0] == item:
+            state = int(line[2])
+            if state == 5:
+                return(2, 'DFS Error')
+            elif state == 4:
+                return(0, 'DFS in Normal Operation')
+            elif state == 3:
+                return(1, 'DFS in Auto Recover Operation')
+            elif state == 2:
+                return(1, 'DFS in Initial Sincronization')
+            elif state == 1:
+                return(1, 'DFS Initializing')
+            elif state == 0:
+                return(0, 'DFS not initialized')
+    return (3, 'Unknow DFS state')
+
+check_info['dfs_state'] = {
+    "check_function"          : check_dfs_state,
+    "inventory_function"      : inventory_dfs_state,
+    "service_description"     : "DFS State:",
+    "has_perfdata"            : False,
+}

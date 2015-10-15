@@ -1,0 +1,23 @@
+#!/bin/bash
+
+manufacturer="$(dmidecode -s baseboard-manufacturer)"
+product_name="$(dmidecode -s system-product-name)"
+version="$(dmidecode -s baseboard-version)"
+
+case $product_name in
+  "VMware Virtual Platform") isvirtual=True;;
+  "VirtualBox") isvirtual=True;;
+  "KVM") isvirtual=True;;
+  "Bochs") isvirtual=True;;
+  "Virtual Machine") isvirtual=True ; product_name="Hyper-V";;
+  "HVM domU") isvirtual=True;;
+  *) isvirtual="False";;
+esac
+
+echo "<<<lnx_detect_virtual>>>"
+echo "Manufacturer : $manufacturer"
+echo "Model : $product_name"
+echo "BIOSVersion : $version"
+echo "IsVirtualMachine : $isvirtual"
+
+exit 0

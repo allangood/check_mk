@@ -1,0 +1,133 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD: allan.cassaro@gmail.com
+#
+
+'''
+Example of output:
+<<<puppet_agent>>>
+last_run: 1439475966
+resources_resources:
+resources_changed: 3
+resources_failed: 0
+resources_failed_to_restart: 0
+resources_out_of_sync: 3
+resources_restarted: 0
+resources_scheduled: 0
+resources_skipped: 0
+resources_total: 77
+events_events:
+events_failure: 0
+events_success: 3
+events_total: 3
+'''
+
+import time
+
+param_puppet_agent_lastrun = (1440,10080)
+param_puppet_agent_events = (2,5)
+param_puppet_agent_resources = (2,5)
+
+def inventory_puppet_agent_lastrun(info):
+    inventory = []
+    for line in info:
+        if line[0] == 'last_run:':
+            inventory.append(('Last Run','param_puppet_agent_lastrun'))
+            break
+    return inventory
+
+def inventory_puppet_agent_events(info):
+    inventory = []
+    for line in info:
+        if line[0] == 'events_failure:':
+            inventory.append(('Events Failure','param_puppet_agent_events'))
+            break
+    return inventory
+
+def inventory_puppet_agent_resources(info):
+    inventory = []
+    for line in info:
+        if line[0] == 'resources_changed:': inventory.append(('Resource Changed',[]))
+        elif line[0] == 'resources_failed:': inventory.append(('Resource Failed',[]))
+        elif line[0] == 'resources_failed_to_restart:': inventory.append(('Resource Failed to Restart',[]))
+        elif line[0] == 'resources_out_of_sync:': inventory.append(('Resources Out Of Sync',[]))
+        elif line[0] == 'resources_restarted:': inventory.append(('Resources Restarted',[]))
+        elif line[0] == 'resources_scheduled:': inventory.append(('Resources Scheduled',[]))
+        elif line[0] == 'resources_skipped:': inventory.append(('Resources Skipped',[]))
+        elif line[0] == 'resources_total': inventory.append(('Resources Total',[]))
+    return inventory
+
+def check_puppet_agent_lastrun(item, params, info):
+    now = int(time.time())
+    diffminutes = 0
+    warn,crit = param_puppet_agent_lastrun
+    for line in info:
+        if line[0] == 'last_run:':
+            diffminutes = ((now - int(line[1])) / 60)
+            perfdata = [('puppet_agent_lastrun',diffminutes,warn,crit)]
+            break
+    if diffminutes > crit:
+        return (2,'Agent ran %d minutes ago' % diffminutes, perfdata)
+    elif diffminutes > warn:
+        return (1,'Agent  ran %d minutes ago' % diffminutes, perfdata)
+    elif diffminutes < warn:
+        return (0,'Agent ran %d minutes ago' % diffminutes, perfdata)
+    return (3,'Unknow agent output')
+
+def check_puppet_agent_events(item, params, info):
+    warn,crit = param_puppet_agent_events
+    for line in info:
+        if line[0] == 'events_failure:':
+            failures = int(line[1])
+            perfdata = [('puppet_agent_failure',failures,warn,crit)]
+            break
+    if failures > crit:
+        return (2,'Events Failures: %d' % failures, perfdata)
+    elif failures > warn:
+        return (1,'Events Failures: %d' % failures, perfdata)
+    elif failures < warn:
+        return (0,'Events Failures: %d' % failures, perfdata)
+    return (3,'Unknow agent output')
+
+'''
+resources_changed: 3
+resources_failed: 0
+resources_failed_to_restart: 0
+resources_out_of_sync: 3
+resources_restarted: 0
+resources_scheduled: 0
+resources_skipped: 0
+resources_total: 77
+'''
+
+def check_puppet_agent_resources(item, params, info):
+    resources_changed, resources_failed, resources_failed_to_restart = [0,0,0]
+    resources_out_of_sync, resources_restarted, resources_scheduled = [0,0,0]
+    resources_skipped, resources_total = [0,0]
+    for line in info:
+        if line[0] == 'resources_changed:': resources_changed = int(line[1])
+        elif line[0] == 'resources_failed:': resources_failed = int(line[1])
+        elif line[0] == 'resources_failed_to_restart:': resources_failed_to_restart = int(line[1])
+        elif line[0] == 'resources_out_of_sync:': resources_out_of_sync = int(line[1])
+        elif line[0] == 'resources_restarted:': resources_restarted = int(line[1])
+        elif line[0] == 'resources_scheduled:': resources_scheduled = int(line[1])
+        elif line[0] == 'resources_skipped:': resources_skipped = int(line[1])
+        elif line[0] == 'resources_total': resources_total = int(line[1])
+    if item == 'Resource Changed':
+        return (0,'Resources Changed: %d' % resources_changed)
+    elif item == 'Resource Failed':
+        return (0,'Resource Failed: %d' % resources_failed)
+    elif item == 'Resource Failed to Restart':
+        return (0,'Resource Failed to Restart: %d' % resources_failed_to_restart)
+    elif item == 'Resources Out Of Sync':
+        return (0,'Resources Out Of Sync: %d' % resources_out_of_sync)
+    elif item == 'Resources Restarted':
+        return (0,'Resources Restarted: %d' % resources_scheduled)
+    elif item == 'Resources Scheduled':
+        return (0,'Resources Scheduled: %d' % resources_scheduled)
+    elif item == 'Resources Skipped':
+        return (0,'Resources Skipped: %d' % resources_skipped)
+    elif item == 'Resources Total':
+        return (0,'Resources Total: %d' % resources_total)
+
