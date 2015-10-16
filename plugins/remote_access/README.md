@@ -34,8 +34,8 @@ _HOSTNAME_ ==> Will be replaced by (configured in WATO) hostname of the server
 
 ### Examples:
 
-![Remote Access Icon](/allangood/site_media/remote_access01.jpg?raw=true "Remote Access Icon")
+![Remote Access Icon](https://raw.githubusercontent.com/allangood/check_mk/master/site_media/remote_access01.jpg "Remote Access Icon")
 
-![Configuration MACRO](/allangood/site_media/remote_access02.jpg?raw=true "Configuration MACRO")
+![Configuration MACRO](https://raw.githubusercontent.com/allangood/check_mk/master/site_media/remote_access02.jpg "Configuration MACRO")
 
-![Configuration with Guacamole](/allangood/site_media/remote_access03.jpg?raw=true "Configuration with Guacamole")
+![Configuration with Guacamole](https://raw.githubusercontent.com/allangood/check_mk/master/site_media/remote_access03.jpg "Configuration with Guacamole")

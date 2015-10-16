@@ -5,4 +5,4 @@ and return into _inventory_ page.
 
 ### Example:
 
-![Detect Virtual](/allangood/site_media/detect_virtual.jpg?raw=true "Detect Virtual")
+![Detect Virtual](https://raw.githubusercontent.com/allangood/check_mk/master/site_media/detect_virtual.jpg "Detect Virtual")

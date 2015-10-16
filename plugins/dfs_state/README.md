@@ -12,4 +12,4 @@ The Agent Plugin doesn't need a Domain User to works.
 
 ### Example:
 
-![DFS State](/allangood/site_media/dfs_state.jpg?raw=true "DFS State")
+![DFS State](https://raw.githubusercontent.com/allangood/check_mk/master/site_media/dfs_state.jpg "DFS State")
