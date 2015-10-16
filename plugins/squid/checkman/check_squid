@@ -1,10 +1,9 @@
 title: Check for Squid3 (www.squid-cache.org) health
 agents: linux
 catalog: os/misc
-license: GPLv2
+license: GPL
 distribution: OMD
 description:
  This check checks for Squid3 (www.squid-cache.org) basic health.
  You need to install the plugin {squid} into the {plugins} directory of your agent.
- Maybe will be necessary to edit and and alter squidclient parameters to your needs
- into agent plugin.
+
