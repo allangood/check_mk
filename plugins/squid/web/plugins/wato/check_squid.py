@@ -1,18 +1,48 @@
 #!/usr/bin/python
 
-# WATO declaration for the check parameters of foo
-register_check_parameters(
-    "Networking",  # main topic for this rule in WATO
-    "check_squid",         # name of WATO group, was declared in check (not always name of check)
-    "Squid3 health", # title of the WATO ruleset
-    Tuple(
-        title = _("Squid3 Health Parameters"),
-        help = _("Configure thresholds for the Squid3 check"),
+Transform(
+    Dictionary(
         elements = [
-           Integer(title = _("Warning above "), unit = _("Severity"), default_value = 1),
-           Integer(title = _("Critical above "), unit = _("Severity"), default_value = 3),
+            ( "client_reqps",
+               Tuple(
+                   title = _("Set levels for Client Requests"),
+                   elements = [
+                         Integer(title = _("Warning at"), default_value = 600),
+                         Integer(title = _("Critical at"), default_value = 800)],
+            ),
+        ],
+            ( "client_hits",
+               Tuple(
+                   title = _("Set levels for Client Hits"),
+                   elements = [
+                         Integer(title = _("Warning at"), default_value = 600),
+                         Integer(title = _("Critical at"), default_value = 800)],
+            ),
+        ],
+            ( "server_reqps",
+               Tuple(
+                   title = _("Set levels for Server Requests"),
+                   elements = [
+                         Integer(title = _("Warning at"), default_value = 600),
+                         Integer(title = _("Critical at"), default_value = 800)],
+            ),
+        ],
+            ( "dns_time",
+               Tuple(
+                   title = _("Set levels for DNS response time in seconds"),
+                   elements = [
+                         Integer(title = _("Warning at"), default_value = 2),
+                         Integer(title = _("Critical at"), default_value = 4)],
+            ),
+        ],
+            ( "cpu_time",
+               Tuple(
+                   title = _("Set levels for Squid CPU time in percent"),
+                   elements = [
+                         Integer(title = _("Warning at"), default_value = 60),
+                         Integer(title = _("Critical at"), default_value = 80)],
+            ),
         ]
     ),
-    None, # Check has no item
-    None, # Match type, always None here
+    forth = lambda old: type(old) != dict and { "client_reqps" : old } or old,
 )

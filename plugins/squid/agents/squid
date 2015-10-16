@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo "<<<squid>>>"
+echo "<<<check_squid>>>"
 /usr/bin/squidclient -p 3128 -T2 mgr:5min | grep =

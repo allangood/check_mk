@@ -1,0 +1,49 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD
+# Plugin: http://social.technet.microsoft.com/wiki/contents/articles/942.hyper-v-how-to-detect-if-a-computer-is-a-vm-using-script.aspx
+#
+# Example output
+#<<<win_detect_virtual>>>
+# Manufacturer : HP
+# Model : ProLiant DL380e Gen8
+# BIOSVersion : HP     - 2
+# IsVirtualMachine : False
+
+# Manufacturer : VMware, Inc.
+# Model : VMware Virtual Platform
+# BIOSVersion : INTEL  - 6040000
+# IsVirtualMachine : True
+# VirtualMachinePlatform : VMware
+
+# Manufacturer : Microsoft Corporation
+# Model : Virtual Machine
+# BIOSVersion : VRTUAL - 3000919
+# IsVirtualMachine : True
+# VirtualMachinePlatform: Hyper-V 2008 R2
+
+def inv_win_detect_virtual(info):
+    vendor,model,biosversion,isvirtual,virtualplatform = ['','','','','']
+    node = inv_tree("hardware.system.")
+    for line in info:
+        line = line[0].split(' : ')
+        if line[0] == 'Manufacturer':
+	     vendor = line[1]
+        elif line[0] == 'Model':
+	     model = line[1]
+        elif line[0] == 'BIOSVersion':
+	     biosversion = line[1]
+        elif line[0] == 'IsVirtualMachine':
+	     isvirtual = line[1]
+        elif line[0] == 'VirtualMachinePlatform':
+	     virtualplatform = line[1]
+    if (isvirtual == "True"):
+        node["virtualization vendor"] = vendor
+        node["virtualization model"] = model
+        node["virtual bios version"] = biosversion
+        node["virtual platform"] = virtualplatform
+    
+inv_info['win_detect_virtual'] = {
+   "inv_function"           : inv_win_detect_virtual,
+}
