@@ -9,3 +9,7 @@ The checks includes:
  - The firmware version
  - Global state
  - Informational messages
+
+### Example:
+
+![TS3200](/allangood/site_media/ts3200.jpg?raw=true "TS3200")
