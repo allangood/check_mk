@@ -9,3 +9,7 @@ Only infomational (always returns 0 - OK) checks for:
  - HTTP requests
  - HTTPS requests
  - Clients Connected
+
+### Example:
+
+![MWG](https://raw.githubusercontent.com/allangood/check_mk/master/site_media/mwg.jpg "MWG")

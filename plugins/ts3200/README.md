@@ -12,4 +12,4 @@ The checks includes:
 
 ### Example:
 
-![TS3200](/allangood/site_media/ts3200.jpg?raw=true "TS3200")
+![TS3200](https://raw.githubusercontent.com/allangood/check_mk/master/site_media/ts3200.jpg "TS3200")
