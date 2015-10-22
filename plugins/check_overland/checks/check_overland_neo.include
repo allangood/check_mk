@@ -1,0 +1,123 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD: allan.cassaro@gmail.com
+#
+
+'''
+This plugin is based on works of:
+Author: Damien SIAUD
+Site: https://exchange.nagios.org/directory/Plugins/Hardware/Storage-Systems/Tape-Drives-and-Libraries/Overland-Storage-Neo-Series/details
+
+And OID From: http://www.oidview.com/mibs/3351/OVERLAND-NEXTGEN.html
+'''
+
+# ====================== BEGIN: ERRORS ======================
+# [['1', '0', '0', 'No faults detected', '']]
+def inventory_overland_errors(info):
+    inventory = []
+    if len(info) > 0 and len(info[0]) > 0:
+        yield "Errors",None
+
+def check_overland_errors(item, params, info):
+    if (item == "Errors"):
+        returnstr = ''
+        for index in info:
+            err_index = index[0]
+            err_code = index[1]
+            err_severity = int(index[2])
+            err_msg = index[3]
+            if len(index[4]) <= 0:
+                returnstr = 'No errors detected'
+            else:
+                returnstr += 'Messages: Error Code: %s | Severity: %d | Message: %s | Action: %s' % (err_code,err_severity,err_msg,err_actionmsg)
+            if err_severity < 2:
+                return (0,returnstr)
+            elif err_severity == 2:
+                return (1,returnstr)
+            elif err_severity == 3:
+                return (2,returnstr)
+    return (3,'Unknow SNMP output')
+
+# ====================== BEGIN: LIBRARY ======================
+def inventory_overland_library(info):
+    inventory = []
+    if len(info) > 0 and len(info[0]) > 0:
+        yield "Status",None
+
+def check_overland_library(item, params, info):
+    if item == "Status":
+        for index in info:
+            library_index = index[0]
+            library_config = index[1]
+            library_scsiid = index[2]
+            library_status = index[3]
+            library_changerstatus = int(index[4])
+            library_state = int(index[5])
+            if library_state == 2:
+                return (2,'Library offline!')
+            if library_changerstatus == 2:
+                return (2,'Changer offline!')
+            if library_state < 2 and library_changerstatus < 2:
+                return (0,'Tape Library is online. Status: %s' % library_status)
+    return (3,'Unknow SNMP output')
+
+# ====================== BEGIN: DRIVES ======================
+
+'''
+I *really* don't know why this tape library doesn't return all
+drives when prompted by snmpwalk (or bulkwalk). The first drive simply disapears!
+So, due this strange behaviour, it's necessary to query it directly and join
+the reponse back to "info" variable. This is hack, but works well...
+'''
+
+def inventory_overland_drives(info):
+    if len(info) > 1:
+        info[0].append(info[1][0])
+        del(info[1])
+        info = info[0]
+    for type,index,status,serialnum,clnreq in info:
+        yield '%s #%s' % (type,index),None
+
+def check_overland_drives(item, params, info):
+    if len(info) > 1:
+        info[0].append(info[1][0])
+        del(info[1])
+        info = info[0]
+    if len(info) == 1: info = info[0]
+    for type,index,status,serialnum,clnreq in info:
+        if item == '%s #%s' % (type,index):
+            msg = 'Drive %s #%s (%s) ' % (type,index,serialnum)
+            if int(status) == 0:
+                code = 0
+                msg += 'initialized '
+            elif int(status) == 1:
+                code = 1
+                msg += 'initialized, with some error '
+            elif int(status) == 2:
+                code = 1
+                msg += 'inserted, with some error '
+            elif int(status) == 3:
+                code = 1
+                msg += 'inserted, but not powered on '
+            elif int(status) == 4:
+                code = 2
+                msg += 'physically removed from library '
+            if clnreq == '1':
+                if code < 2: code = 1
+                msg += 'need to be cleaned '
+            return (code,msg)
+
+# ====================== BEGIN: MODULES ======================
+'''
+My Tape Library doens't return anything as "modules".
+No data as sample, no way to implement something here...
+'''
+
+def inventory_overland_modules(info):
+    inventory = []
+    return inventory
+
+def check_overland_modules(item, params, info):
+    return
+

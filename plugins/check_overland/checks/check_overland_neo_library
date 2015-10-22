@@ -1,0 +1,15 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Writed by Allan GooD: allan.cassaro@gmail.com
+#
+
+check_info["check_overland_neo_library"] = {
+    'check_function':           check_overland_library,
+    'inventory_function':       inventory_overland_library,
+    'service_description':      'Tape Library Overland Neo %s',
+    'group':                    'overland_neo',
+    'has_perfdata':             False,
+    'includes':			['check_overland_neo.include'],
+    'snmp_info':		( ".1.3.6.1.4.1.3351.1.3.2.3.2.1", [ "1","2","3","4","5","6" ] ),
+}
