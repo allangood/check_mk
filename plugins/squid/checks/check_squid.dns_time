@@ -1,0 +1,13 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 2 -*-
+#
+  
+check_info["check_squid.dns_time"] = {
+  'check_function':		check_squid_dns_time,
+  'inventory_function':		inventory_squid_dns_time,
+  'service_description':	'Squid %s',
+  'group':			'check_squid',
+  'has_perfdata':		True,
+  'includes':			['check_squid.include'],
+  'default_levels_variable':	'squid_default_levels',
+}
