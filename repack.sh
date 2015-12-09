@@ -33,7 +33,7 @@ for f in $(ls -1 *.tar); do
 done
 version=$(grep "'version':" info | cut -f4 -d\')
 newversion=$(echo ${version} + 0.1 | bc)
-sed "s/'version': .*/'version': ${newversion}/g" info > info_new
+sed "s/'version': .*/'version': '${newversion}',/g" info > info_new
 mv info_new info
 tar zcf ../${pktname}-${newversion}.mkp *
 
