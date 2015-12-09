@@ -11,3 +11,4 @@ Check_MK plugins:
  - thruk_reports => Integrates Thruk PDF Reports into Check_MK icon;
  - ts3200 => Checks for IBM TS3200 Tape Library;
  - windows_agent_plugins => Some MS Windows plugins;
+ - check_overland => SNMP checks for Overland Neo series Tape Library
