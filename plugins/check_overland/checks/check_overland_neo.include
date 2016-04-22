@@ -4,12 +4,13 @@
 # Writed by Allan GooD: allan.cassaro@gmail.com
 #
 
+
 '''
 This plugin is based on works of:
 Author: Damien SIAUD
 Site: https://exchange.nagios.org/directory/Plugins/Hardware/Storage-Systems/Tape-Drives-and-Libraries/Overland-Storage-Neo-Series/details
-
 And OID From: http://www.oidview.com/mibs/3351/OVERLAND-NEXTGEN.html
+
 '''
 
 # ====================== BEGIN: ERRORS ======================
@@ -63,17 +64,12 @@ def check_overland_library(item, params, info):
     return (3,'Unknow SNMP output')
 
 # ====================== BEGIN: DRIVES ======================
-
-'''
-I *really* don't know why this tape library doesn't return all
-drives when prompted by snmpwalk (or bulkwalk). The first drive simply disapears!
-So, due this strange behaviour, it's necessary to query it directly and join
-the reponse back to "info" variable. This is hack, but works well...
-'''
-
 def inventory_overland_drives(info):
     if len(info) > 1:
-        info[0].append(info[1][0])
+        try:
+            info[0].append(info[1][0])
+        except IndexError:
+            return
         del(info[1])
         info = info[0]
     for type,index,status,serialnum,clnreq in info:
@@ -104,16 +100,11 @@ def check_overland_drives(item, params, info):
                 code = 2
                 msg += 'physically removed from library '
             if clnreq == '1':
-                if code < 2: code = 1
+                code = 2
                 msg += 'need to be cleaned '
             return (code,msg)
 
 # ====================== BEGIN: MODULES ======================
-'''
-My Tape Library doens't return anything as "modules".
-No data as sample, no way to implement something here...
-'''
-
 def inventory_overland_modules(info):
     inventory = []
     return inventory

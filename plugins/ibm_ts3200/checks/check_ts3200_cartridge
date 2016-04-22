@@ -4,33 +4,34 @@
 # Writed by Allan GooD: allan.cassaro@gmail.com
 #
 
-drivenumber_severity_level = (1,1)
+cartridges_severity_level = (1,1)
 
 def inventory_ts(info):
     inventory = []
     if len(info) > 0 and len(info[0]) > 0:
-        inventory.append(("Drive Number",drivenumber_severity_level))
+        inventory.append(("Cartridges",cartridges_severity_level))
     return inventory
 
 def check_ts(item, params, info):
     warn, crit = params
-    if (item =="Drive Number"):
+    if (item =="Cartridges"):
         value = int(info[0][0])
-        warn,crit = drivenumber_severity_level
+        warn,crit = cartridges_severity_level
         if (value < crit):
-            return (2, "CRITICAL - Number of drivers: %s" %(value))
+            return (2, "CRITICAL - Number of cartridges: %s" %(value))
         elif (value < warn):
-            return (1, "CRITICAL - Number of drivers: %s" %(value))
+            return (1, "CRITICAL - Number of cartridges: %s" %(value))
         else:
-            return (0, "OK - Number of drivers: %s" %(value))
+            return (0, "OK - Number of cartridges: %s" %(value))
     return (3, "UNKNOWN - Not implemented")
 
-check_info["check_ts3200_drive"] = {
+check_info["check_ts3200_cartridge"] = {
     'check_function':		check_ts,
     'inventory_function':	inventory_ts,
     'service_description':	'Tape Library TS3200 %s',
+    'snmp_scan_function':	lambda oid: oid(".1.3.6.1.4.1.2.6.211"),
     'group':			'ts3200',
     'has_perfdata':		False,
 }
 
-snmp_info["check_ts3200_drive"] = ( ".1.3.6.1.4.1.2.6.211", [ "3.1.1.11.1" ] )
+snmp_info["check_ts3200_cartridge"] = ( ".1.3.6.1.4.1.2.6.211", [ "3.1.1.12.1" ] )

@@ -74,6 +74,7 @@ check_info["check_mwg"] = {
     'inventory_function':	inventory_mwg,
     'service_description':	'MWG %s',
     'group':			'mwg',
+    'snmp_scan_function':	lambda oid: oid(".1.3.6.1.4.1.1230.2"),
     'has_perfdata':		True,
 }
 
