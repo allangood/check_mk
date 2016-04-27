@@ -1,7 +1,7 @@
 {'author': 'Allan GooD - allan.cassaro@gmail.com',
  'description': 'Checks for DFS State',
  'download_url': 'https://github.com/allangood/check_mk',
- 'files': {'agents': [dfs_state.vbs],
+ 'files': {'agents': ['dfs_state.vbs'],
            'checkman': [],
            'checks': ['check_dfs_state'],
            'doc': [],
