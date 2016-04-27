@@ -55,7 +55,7 @@ def inventory_puppet_agent_resources(info):
         elif line[0] == 'resources_restarted:': inventory.append(('Resources Restarted',[]))
         elif line[0] == 'resources_scheduled:': inventory.append(('Resources Scheduled',[]))
         elif line[0] == 'resources_skipped:': inventory.append(('Resources Skipped',[]))
-        elif line[0] == 'resources_total': inventory.append(('Resources Total',[]))
+        elif line[0] == 'resources_total:': inventory.append(('Resources Total',[]))
     return inventory
 
 def check_puppet_agent_lastrun(item, params, info):
@@ -113,7 +113,7 @@ def check_puppet_agent_resources(item, params, info):
         elif line[0] == 'resources_restarted:': resources_restarted = int(line[1])
         elif line[0] == 'resources_scheduled:': resources_scheduled = int(line[1])
         elif line[0] == 'resources_skipped:': resources_skipped = int(line[1])
-        elif line[0] == 'resources_total': resources_total = int(line[1])
+        elif line[0] == 'resources_total:': resources_total = int(line[1])
     if item == 'Resource Changed':
         return (0,'Resources Changed: %d' % resources_changed)
     elif item == 'Resource Failed':
