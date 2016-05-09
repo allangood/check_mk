@@ -1,0 +1,61 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# Exemple os output
+#
+# <<<dns>>>
+# version: 9.9.2-RedHat-9.9.2-P2.el6 (ISC-BIND)
+# CPUs found: 2
+# worker threads: 2
+# UDP listeners per interface: 2
+# number of zones: 20808
+# debug level: 0
+# xfers running: 0
+# xfers deferred: 0
+# soa queries in progress: 0
+# query logging is ON
+# recursive clients: 3603/7900/8000
+# tcp clients: 0/100
+# server is up and running
+# queries per seconds: 67
+#
+
+def inventory_dns(info):
+  inventory = []
+  for line in info:
+    if (line[0] == 'recursive'):
+      inventory.append(('Recursive queries',None))
+    if (line[0] == 'queries'):
+      inventory.append(('Queries Per Second',None))
+  return inventory
+
+def check_dns(item, params, info):
+  for line in info:
+    if (line[0] == 'recursive'):
+      tmp = line[2].split('/')
+      recursive = int(tmp[0])
+      recursive_soft = int(tmp[1])
+      recursive_hard = int(tmp[2])
+    if (line[0] == 'queries'):
+      queries = int(line[3])
+  if (item == 'Queries Per Second'):
+    perfdata = [("queries",queries,1000,2000)]
+    return (0,'Queries Per Second is %d' % queries, perfdata)
+  if (item == 'Recursive queries'):
+    perfdata = [("recursive",recursive,recursive_soft,recursive_hard)]
+    if (recursive <= recursive_soft - 100):
+      return (0,'Recursive clients is %d of %d' % (recursive, recursive_hard), perfdata)
+    elif (recursive > recursive_soft - 100):
+      return (1,'Recursive clients is %d of %d' % (recursive, recursive_hard), perfdata)
+    elif (recursive == recursive_hard):
+      return (2,'Recursive clients is %d of %d' % (recursive, recursive_hard), perfdata)
+  return(3,'No information')
+   
+
+# declare the check to Check_MK
+check_info["dns"] = {
+  'check_function':		check_dns,
+  'inventory_function':		inventory_dns,
+  'service_description':	'DNS %s',
+  'has_perfdata':		True,
+}

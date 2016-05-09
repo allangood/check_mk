@@ -4,7 +4,9 @@
 # Writed by Allan GooD: allan.cassaro@gmail.com
 #
 
-cartridges_severity_level = (1,1)
+factory_settings['ibm_ts3200_cartridge_default_levels'] = {
+    'cartridges' : ( 4, 2 ),
+}
 
 def inventory_ts(info):
     inventory = []
@@ -13,10 +15,13 @@ def inventory_ts(info):
     return inventory
 
 def check_ts(item, params, info):
-    warn, crit = params
-    if (item =="Cartridges"):
+    if (type(params) == dict):
+        warn, crit = params['cartridges']
+    else:
+        warn, crit = params
+
+    if (item == "Cartridges"):
         value = int(info[0][0])
-        warn,crit = cartridges_severity_level
         if (value < crit):
             return (2, "CRITICAL - Number of cartridges: %s" %(value))
         elif (value < warn):

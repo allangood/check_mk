@@ -1,0 +1,21 @@
+title: Check for ISC Bind9 health
+agents: linux
+catalog: os/misc
+license: GPL
+distribution: OMD
+description:
+ This check checks for ISC Bind9 basic health.
+ You need to install the plugin {dns} into the {plugins} directory of your agent.
+ Before install the plugin, you must edit and the query_log variable to reflect the
+ query_log file path of named.conf.
+
+If you want "queries persecond" information, you must configure your named.conf like this:
+
+channel "query_log" {
+  file "/var/log/query.log" versions 10 size 100m;
+  severity info;
+  print-time yes;
+};
+category queries { "query_log"; };
+
+And change the "agent/plugin/isc_bind9" to reflect the "query_log" file location.

@@ -13,8 +13,7 @@ def paint_svc_icon(what, row, tags, custom_vars):
             url = custom_vars.get("REMOTE").replace('_HOST_',b64host).replace('_IPADDRESS_',b64ipaddress)
         else:
             url = custom_vars.get("REMOTE").replace('_HOST_',host).replace('_IPADDRESS_',ipaddress)
-        return u'<a href="%s" target="_blank" title="Remote Access">' \
-        '<img class=icon src="images/icons/krfb.png"/></a>' % (url)
+        return 'krfb', 'Remote Access', url
 
 multisite_icons.append({
     'paint':           paint_svc_icon,

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Change this:
+query_log="/var/log/bind/query.log"
+rndcbin="/usr/sbin/rndc"
+
+# ===== Dont change anything above this line ===== #
+echo "<<<dns>>>"
+if [ -e "${rndcbin}" ]; then
+  ${rndcbin} status
+fi
+
+if [ -e "${query_log}" ]; then
+  Hlog="$(tail -n1 "${query_log}" | cut -f1 -d: | cut -f2 -d' ')"
+  Hnow="$(date +%H)"
+
+  opt=""
+  if [ "$Hlog" != "$Hnow" ]; then opt="--utc"; fi
+
+  tmp="$(echo "`date $opt +%S` - 1" | bc)"
+  sec="$(printf '%02d' ${tmp})"
+  if [ "${sec}" -lt 1 ]; then sec="00"; fi
+  now="$(date $opt +%H:%M:)${sec}"
+  count="$(grep "${now}" ${query_log} | grep -v transfer | wc -l)"
+  echo "queries per seconds: ${count}"
+fi
