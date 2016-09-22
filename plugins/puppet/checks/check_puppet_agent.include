@@ -61,6 +61,7 @@ def inventory_puppet_agent_resources(info):
 def check_puppet_agent_lastrun(item, params, info):
     now = int(time.time())
     diffminutes = 0
+    perfdata = [('puppet_agent_lastrun',diffminutes,warn,crit)]
     warn,crit = param_puppet_agent_lastrun
     for line in info:
         if line[0] == 'last_run:':
@@ -77,6 +78,8 @@ def check_puppet_agent_lastrun(item, params, info):
 
 def check_puppet_agent_events(item, params, info):
     warn,crit = param_puppet_agent_events
+    failures = 0
+    perfdata = [('puppet_agent_failure',failures,warn,crit)]
     for line in info:
         if line[0] == 'events_failure:':
             failures = int(line[1])
