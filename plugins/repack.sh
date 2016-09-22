@@ -3,10 +3,12 @@
 # by Allan GooD
 #
 
+modname="$1"
+
 dirs="agents checkman checks doc inventory notifications pnp-templates web"
 
 basedir="$(pwd)"
-for info in $(find -name info); do
+for info in $(find ${modname} -name info); do
   pktdir="$(dirname ${info})"
   pktname="$(grep \'name\' ${info} | cut -f4 -d\')"
   pktversion="$(grep \'version\' ${info} | cut -f4 -d\')"
