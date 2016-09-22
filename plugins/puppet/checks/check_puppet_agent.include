@@ -60,9 +60,9 @@ def inventory_puppet_agent_resources(info):
 
 def check_puppet_agent_lastrun(item, params, info):
     now = int(time.time())
+    warn,crit = param_puppet_agent_lastrun
     diffminutes = 0
     perfdata = [('puppet_agent_lastrun',diffminutes,warn,crit)]
-    warn,crit = param_puppet_agent_lastrun
     for line in info:
         if line[0] == 'last_run:':
             diffminutes = ((now - int(line[1])) / 60)
