@@ -53,7 +53,7 @@ def check_dns(item, params, info):
    
 
 # declare the check to Check_MK
-check_info["dns"] = {
+check_info["check_bind9"] = {
   'check_function':		check_dns,
   'inventory_function':		inventory_dns,
   'service_description':	'DNS %s',
