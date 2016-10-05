@@ -5,7 +5,7 @@ query_log="/var/log/bind/query.log"
 rndcbin="/usr/sbin/rndc"
 
 # ===== Dont change anything above this line ===== #
-echo "<<<dns>>>"
+echo "<<<check_bind9>>>"
 if [ -e "${rndcbin}" ]; then
   ${rndcbin} status
 fi
