@@ -3,7 +3,7 @@
  'download_url': 'https://github.com/allangood/check_mk',
  'files': {'agents': ['dfs_state.vbs'],
            'checkman': [],
-           'checks': ['check_dfs_state'],
+           'checks': ['dfs_state'],
            'doc': [],
            'inventory': [],
            'notifications': [],
@@ -12,6 +12,6 @@
  'name': 'check_dfs_state',
  'num_files': 2,
  'title': 'Checks for DFS State',
- 'version': '1.2',
+ 'version': '1.3',
  'version.min_required': '1.2.6',
- 'version.packaged': '1.2.8b9'}
+ 'version.packaged': '1.2.8'}

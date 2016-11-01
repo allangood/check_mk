@@ -17,14 +17,14 @@ XXXX                  SRXXXXXXXX1-SVXXXXXXXX2  4
 def inventory_dfs_state(info):
     inventory = []
     for line in info:
-        if (len(line) == 3) and (line[2].isdigit()):
-            inventory.append( (line[0],()) )
+        if (len(line) > 0) and (line[-1].isdigit()):
+            inventory.append( ( ' '.join(line[:-2]), () ) )
     return inventory
 
 def check_dfs_state(item, params, info):
     for line in info:
-        if line[0] == item:
-            state = int(line[2])
+        if ' '.join(line[:-2]) == item:
+            state = int(line[-1])
             if state == 5:
                 return(2, 'DFS Error')
             elif state == 4:
