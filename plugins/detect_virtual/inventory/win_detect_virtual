@@ -11,6 +11,12 @@
 # BIOSVersion : HP     - 2
 # IsVirtualMachine : False
 
+# Manufacturer : VMware, Inc.
+# Model : VMware Virtual Platform
+# BIOSVersion : INTEL  - 6040000
+# IsVirtualMachine : True
+# VirtualMachinePlatform : VMware
+
 # <<<win_detect_virtual>>>
 # Manufacturer : Microsoft Corporation
 # Model : Virtual Machine

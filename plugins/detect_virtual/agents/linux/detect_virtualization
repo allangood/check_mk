@@ -1,13 +1,13 @@
 #!/bin/bash
 
-manufacturer="$(dmidecode -s baseboard-manufacturer)"
-product_name="$(dmidecode -s system-product-name)"
-version="$(dmidecode -s baseboard-version)"
+manufacturer="$(dmidecode -s baseboard-manufacturer 2> /dev/null)"
+product_name="$(dmidecode -s system-product-name 2> /dev/null)"
+version="$(dmidecode -s baseboard-version 2> /dev/null)"
 
 case $product_name in
   "VMware Virtual Platform") isvirtual=True;;
   "VirtualBox") isvirtual=True;;
-  "KVM") isvirtual=True;;
+  "KVM"|"QEMU") isvirtual=True;;
   "Bochs") isvirtual=True;;
   "Virtual Machine") isvirtual=True ; product_name="Hyper-V";;
   "HVM domU") isvirtual=True;;
