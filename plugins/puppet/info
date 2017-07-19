@@ -2,7 +2,7 @@
  'description': 'Checks for Puppet Agent',
  'download_url': 'https://github.com/allangood/check_mk/tree/master/plugins',
  'files': {'agents': ['plugins/linux/mk_puppet',
-                      'plugins/windows/mk_puppet'],
+                      'plugins/windows/mk_puppet.ps1'],
            'checkman': [],
            'checks': ['check_puppet_agent.events',
                       'check_puppet_agent.include',
@@ -16,6 +16,6 @@
  'name': 'puppet',
  'num_files': 6,
  'title': 'Checks for Puppet Agent',
- 'version': '1.4',
+ 'version': '1.5',
  'version.min_required': '1.2.6',
  'version.packaged': '1.2.6'}
