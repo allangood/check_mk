@@ -70,7 +70,7 @@ def check_puppet_agent_lastrun(item, params, info):
             break
     if diffminutes > crit:
         return (2,'Agent ran %d minutes ago' % diffminutes, perfdata)
-    elif diffminutes > warn:
+    elif diffminutes >= warn:
         return (1,'Agent  ran %d minutes ago' % diffminutes, perfdata)
     elif diffminutes < warn:
         return (0,'Agent ran %d minutes ago' % diffminutes, perfdata)
@@ -87,7 +87,7 @@ def check_puppet_agent_events(item, params, info):
             break
     if failures > crit:
         return (2,'Events Failures: %d' % failures, perfdata)
-    elif failures > warn:
+    elif failures >= warn:
         return (1,'Events Failures: %d' % failures, perfdata)
     elif failures < warn:
         return (0,'Events Failures: %d' % failures, perfdata)
