@@ -2,5 +2,5 @@
 
 if type squidclient > /dev/null 2>&1 ; then
    echo "<<<check_squid>>>"
-   squidclient -p 3128 -T2 mgr:5min | grep =
+   squidclient -p 3128 -T2 mgr:5min | grep ' = '
 fi
