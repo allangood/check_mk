@@ -87,7 +87,7 @@ def check_squid_server_requests(item, params, info):
   for line in info:
     if (item == 'Server Requests/s') and (line[0] == 'server.all.requests'):
       server_reqs = float(line[2][:-4])
-      perfdata = [("server_http.requests",server_reqs,warn,crit)]
+      perfdata = [("server_http_requests",server_reqs,warn,crit)]
       if (server_reqs >= crit):
         return(2,'Server: %0.2f Requests per second' % server_reqs, perfdata)
       elif (server_reqs >= warn):
@@ -130,7 +130,7 @@ def check_squid_dns_time(item, params, info):
   for line in info:
     if (item == 'DNS response time') and (line[0] == 'dns.median_svc_time'):
       dns_time = float(line[2])
-      perfdata = [("dns.median_svc_time",dns_time,warn,crit)]
+      perfdata = [("dns_median_svc_time",dns_time,warn,crit)]
       if (dns_time >= crit):
         return(2,'DNS Response time (avg): %0.4f seconds' % dns_time, perfdata)
       elif (dns_time >= warn):
