@@ -9,148 +9,214 @@ Plugin on monitored host:
 --- BEGIN ---
 #!/bin/bash
 
-echo "<<<squid>>>"
-/usr/bin/squidclient -p 3128 -T2 mgr:5min | grep =
+if type squidclient > /dev/null 2>&1 ; then
+  echo "<<<check_squid>>>"
+
+  # one squid instance
+  squidclient -p 3128 -T2 mgr:5min | grep ' = '
+
+  # multiple squid instances
+  # instance names must be without spaces and with colon char at the end
+  # squidclient -p 3128 -T2 mgr:5min | grep ' = ' | sed -e 's/^/Instance1:/'
+  # squidclient -p 3129 -T2 mgr:5min | grep ' = ' | sed -e 's/^/Instance2:/'
+fi
 --- END ---
 
-Sample output:
+Sample output - one squid instance:
 <<<check_squid>>>
 sample_start_time = 1445017672.30928 (Fri, 16 Oct 2015 17:47:52 GMT)
 sample_end_time = 1445018024.561103 (Fri, 16 Oct 2015 17:53:44 GMT)
 client_http.requests = 411.366795/sec
 client_http.hits = 18.516522/sec
 client_http.errors = 23.463149/sec
-client_http.kbytes_in = 628.668411/sec
-client_http.kbytes_out = 10633.158927/sec
-client_http.all_median_svc_time = 0.108301 seconds
-client_http.miss_median_svc_time = 0.130846 seconds
-client_http.nm_median_svc_time = 0.000000 seconds
-client_http.nh_median_svc_time = 0.019607 seconds
-client_http.hit_median_svc_time = 0.000000 seconds
+... and much more ...
+
+Sample output - multiple squid instances:
+<<<check_squid>>>
+Instance1:sample_start_time = 1445017672.30928 (Fri, 16 Oct 2015 17:47:52 GMT)
+Instance1:sample_end_time = 1445018024.561103 (Fri, 16 Oct 2015 17:53:44 GMT)
+Instance1:client_http.requests = 411.366795/sec
+Instance1:client_http.hits = 18.516522/sec
+Instance1:client_http.errors = 23.463149/sec
+... and much more ...
+Instance2:sample_start_time = 1445017672.30928 (Fri, 16 Oct 2015 17:47:52 GMT)
+Instance2:sample_end_time = 1445018024.561103 (Fri, 16 Oct 2015 17:53:44 GMT)
+Instance2:client_http.requests = 411.366795/sec
+Instance2:client_http.hits = 18.516522/sec
+Instance2:client_http.errors = 23.463149/sec
 ... and much more ...
 '''
 
 factory_settings["squid_default_levels"] = {
-    "client_reqps"	:	(600, 800),
-    "client_hits"	:	(600, 800),
-    "server_reqps"	:	(600,800),
-    "dns_time"		:	(2,4),
-    "cpu_time"		:	(60,80)
+    "client_reqps": (600, 800),
+    "client_hits" : (600, 800),
+    "server_reqps": (600, 800),
+    "dns_time"    : (2, 4),
+    "cpu_time"    : (60, 80)
 }
 
 def inventory_squid_client_hits(info):
-  inventory = []
   for line in info:
-    if (line[0] == 'client_http.hits'):
-      yield 'Client Hits/s', {}
-  #    inventory.append(('Client Hits/s',{}))
-  #return inventory
+    if 'client_http.hits' in line[0]:
+      parts = line[0].split(':')
+      if len(parts) == 2:
+        yield parts[0] + ' Client Hits/s', {}
+      else:
+        yield 'Client Hits/s', {}
 
 def inventory_squid_client_requests(info):
-  inventory = []
   for line in info:
-    if (line[0] == 'client_http.requests'):
-       yield 'Client Requests/s',{}
-  #    inventory.append(('Client Requests/s',{}))
-  #return inventory
+    if 'client_http.requests' in line[0]:
+      parts = line[0].split(':')
+      if len(parts) == 2:
+        yield parts[0] + ' Client Requests/s', {}
+      else:
+        yield 'Client Requests/s', {}
 
 def inventory_squid_server_requests(info):
-  inventory = []
   for line in info:
-    if (line[0] == 'server.all.requests'):
-      yield 'Server Requests/s',{}
-  #    inventory.append(('Server Requests/s',{}))
-  #return inventory
+    if 'server.all.requests' in line[0]:
+      parts = line[0].split(':')
+      if len(parts) == 2:
+        yield parts[0] + ' Server Requests/s', {}
+      else:
+        yield 'Server Requests/s', {}
 
 def inventory_squid_dns_time(info):
-  inventory = []
   for line in info:
-    if (line[0] == 'dns.median_svc_time'):
-       yield 'DNS response time',{}
-  #    inventory.append(('DNS response time',{}))
-  #return inventory
+    if 'dns.median_svc_time' in line[0]:
+      parts = line[0].split(':')
+      if len(parts) == 2:
+        yield parts[0] + ' DNS response time', {}
+      else:
+        yield 'DNS response time', {}
 
 def inventory_squid_cpu(info):
-  inventory = []
   for line in info:
-    if (line[0] == 'cpu_usage'):
-       yield 'CPU Usage',{}
-  #    inventory.append(('CPU Usage',{}))
-  #return inventory
+    if 'cpu_usage' in line[0]:
+      parts = line[0].split(':')
+      if len(parts) == 2:
+        yield parts[0] + ' CPU Usage', {}
+      else:
+        yield 'CPU Usage', {}
 
 #==========================================================
 
 def check_squid_server_requests(item, params, info):
-  warn, crit = (0,0)
+  idx = item.index('Server Requests/s')
+  if idx > 0:
+    match = item[:idx - 1] + ':'
+  else:
+    match = ''
+  match += 'server.all.requests'
+
+  warn, crit = (0, 0)
   if "server_reqps" in params:
       warn, crit = params["server_reqps"]
+
   for line in info:
-    if (item == 'Server Requests/s') and (line[0] == 'server.all.requests'):
+    if line[0] == match:
       server_reqs = float(line[2][:-4])
-      perfdata = [("server_http.requests",server_reqs,warn,crit)]
-      if (server_reqs >= crit):
-        return(2,'Server: %0.2f Requests per second' % server_reqs, perfdata)
-      elif (server_reqs >= warn):
-        return(1,'Server: %0.2f Requests per second' % server_reqs, perfdata)
-      elif (server_reqs < warn):
-        return(0,'Server: %0.2f Requests per second' % server_reqs, perfdata)
-  return (3,'No information available')
+      perfdata = [("server_http_requests", server_reqs, warn, crit)]
+      if server_reqs >= crit:
+        return (2, 'Server: %0.2f Requests per second' % server_reqs, perfdata)
+      elif server_reqs >= warn:
+        return (1, 'Server: %0.2f Requests per second' % server_reqs, perfdata)
+      elif server_reqs < warn:
+        return (0, 'Server: %0.2f Requests per second' % server_reqs, perfdata)
+  return (3, 'No information available')
 
 def check_squid_client_reqs(item, params, info):
-  warn, crit = (0,0)
+  idx = item.index('Client Requests/s')
+  if idx > 0:
+    match = item[:idx - 1] + ':'
+  else:
+    match = ''
+  match += 'client_http.requests'
+
+  warn, crit = (0, 0)
   if "client_reqps" in params:
       warn, crit = params["client_reqps"]
+
   for line in info:
-    if (item == 'Client Requests/s') and (line[0] == 'client_http.requests'):
+    if line[0] == match:
       client_reqs = float(line[2][:-4])
-      perfdata = [("client_requests_per_second",client_reqs)]
-      return(0,'Client: %0.4f Requests per second' % client_reqs,perfdata)
-  return (3,'No information available')
+      perfdata = [("client_requests_per_second", client_reqs)]
+      return (0, 'Client: %0.4f Requests per second' % client_reqs,perfdata)
+  return (3, 'No information available')
 
 def check_squid_client_hits(item, params, info):
-  warn, crit = (0,0)
+  idx = item.index('Client Hits/s')
+  if idx > 0:
+    match = item[:idx - 1] + ':'
+  else:
+    match = ''
+  match += 'client_http.hits'
+
+  warn, crit = (0, 0)
   if "client_hits" in params:
       warn, crit = params["client_hits"]
+
   for line in info:
-    if (item == 'Client Hits/s') and (line[0] == 'client_http.hits'):
+    if line[0] == match:
       client_hits = float(line[2][:-4])
-      perfdata = [("client_hits_per_second",client_hits,warn,crit)]
-      if (client_hits >= crit):
-        return(2,'Client: %0.2f Hits per second' % client_hits, perfdata)
-      elif (client_hits >= warn):
-        return(1,'Client: %0.2f Hits per second' % client_hits, perfdata)
-      elif (client_hits < warn):
-        return(0,'Client: %0.2f Hits per second' % client_hits, perfdata)
-  return (3,'No information available')
+      perfdata = [("client_hits_per_second", client_hits, warn, crit)]
+      if client_hits >= crit:
+        return (2, 'Client: %0.2f Hits per second' % client_hits, perfdata)
+      elif client_hits >= warn:
+        return (1, 'Client: %0.2f Hits per second' % client_hits, perfdata)
+      elif client_hits < warn:
+        return (0, 'Client: %0.2f Hits per second' % client_hits, perfdata)
+  return (3, 'No information available')
 
 def check_squid_dns_time(item, params, info):
-  warn, crit = (0,0)
+  idx = item.index('DNS response time')
+  if idx > 0:
+    match = item[:idx - 1] + ':'
+  else:
+    match = ''
+  match += 'dns.median_svc_time'
+
+  warn, crit = (0, 0)
   if "dns_time" in params:
       warn, crit = params["dns_time"]
+
   for line in info:
-    if (item == 'DNS response time') and (line[0] == 'dns.median_svc_time'):
+    if line[0] == match:
+      parts = line[0].split(':')
+      if len(parts) == 2:
+        if not item.startswith(parts[0] + ' '):
+          continue
       dns_time = float(line[2])
-      perfdata = [("dns.median_svc_time",dns_time,warn,crit)]
-      if (dns_time >= crit):
-        return(2,'DNS Response time (avg): %0.4f seconds' % dns_time, perfdata)
-      elif (dns_time >= warn):
-        return(1,'DNS Resposnse time (avg): %0.4f seconds' % dns_time, perfdata)
-      elif (dns_time < warn):
-        return(0,'DNS Resposnse time (avg): %0.4f seconds' % dns_time, perfdata)
-  return (3,'No information available')
+      perfdata = [("dns_median_svc_time", dns_time, warn, crit)]
+      if dns_time >= crit:
+        return (2, 'DNS Response time (avg): %0.4f seconds' % dns_time, perfdata)
+      elif dns_time >= warn:
+        return (1, 'DNS Response time (avg): %0.4f seconds' % dns_time, perfdata)
+      elif dns_time < warn:
+        return (0, 'DNS Response time (avg): %0.4f seconds' % dns_time, perfdata)
+  return (3, 'No information available')
 
 def check_squid_cpu(item, params, info):
-  warn, crit = (0,0)
+  idx = item.index('CPU Usage')
+  if idx > 0:
+    match = item[:idx - 1] + ':'
+  else:
+    match = ''
+  match += 'cpu_usage'
+
+  warn, crit = (0, 0)
   if "cpu_time" in params:
       warn, crit = params["cpu_time"]
+
   for line in info:
-    if (item == 'CPU Usage') and (line[0] == 'cpu_usage'):
+    if line[0] == match:
       cpu = float(line[2][:-1])
-      perfdata = [("cpu_usage",cpu,warn,crit)]
-      if (cpu >= crit):
-        return(2,'CPU Usage: %0.4f%%' % cpu, perfdata)
-      elif (cpu >= warn):
-        return(1,'CPU Usage: %0.4f%%' % cpu, perfdata)
-      elif (cpu < warn):
-        return(0,'CPU Usage: %0.4f%%' % cpu, perfdata)
-  return (3,'No information available')
+      perfdata = [("cpu_usage", cpu, warn, crit)]
+      if cpu >= crit:
+        return (2, 'CPU Usage: %0.4f%%' % cpu, perfdata)
+      elif cpu >= warn:
+        return (1, 'CPU Usage: %0.4f%%' % cpu, perfdata)
+      elif cpu < warn:
+        return (0, 'CPU Usage: %0.4f%%' % cpu, perfdata)
+  return (3, 'No information available')
