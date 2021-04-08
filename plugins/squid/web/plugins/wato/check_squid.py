@@ -1,5 +1,24 @@
 #!/usr/bin/python
 
+group = "agents/" + _("Agent Plugins")
+register_rule(group,
+        "agent_config:squid",
+        Dictionary(
+            help = _("The plugin <tt>squid</tt> allows monitoring of Squid Web Proxies."),
+            title = ("Squid Web Proxy (Linux)"),
+            elements = [
+                ("port",
+                    Integer(
+                        title = _("Port number"),
+                        help = _("TCP port number that squidclient connects to."),
+                        default_value=3128,
+                        allow_empty=False,
+                        )
+                    )
+                ]
+            )
+        )
+
 Transform(
     Dictionary(
         elements = [
