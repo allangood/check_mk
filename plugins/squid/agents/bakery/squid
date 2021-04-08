@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+
+
+def bake_squid(opsys, conf, conf_dir, plugins_dir):
+    try:
+       shutil.copy2(local_agents_dir + "/plugins/linux/squid", plugins_dir + "/squid")
+    except:
+       # in CheckMK v 1.6 cmk.paths is changed to cmk.utils.paths
+       shutil.copy2(cmk.utils.paths.local_agents_dir + "/plugins/linux/squid", plugins_dir + "/squid")
+
+    port = conf["port"]
+    cfg_file = conf_dir + "/squid.cfg"
+    file(cfg_file, "w").write("port=%d\n" % port)
+
+
+
+bakery_info["squid"] = {
+    "bake_function" : bake_squid,
+    "os"            : [ "linux" ],
+}

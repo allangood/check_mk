@@ -9,11 +9,23 @@ Plugin on monitored host:
 --- BEGIN ---
 #!/bin/bash
 
+MK_CONFDIR="/etc/check_mk"
+
+
+if [ -e $MK_CONFDIR/squid.cfg ] ; then
+  . "$MK_CONFDIR"/squid.cfg
+fi
+
+if [ -z "$port" ]; then
+  port=$(ss -tlpn | grep squid | tr -s ' ' | cut -d' ' -f 4 | cut -d':' -f 2)
+fi
+
+
 if type squidclient > /dev/null 2>&1 ; then
   echo "<<<check_squid>>>"
 
   # one squid instance
-  squidclient -p 3128 -T2 mgr:5min | grep ' = '
+  squidclient -p "$port" -T2 mgr:5min | grep =
 
   # multiple squid instances
   # instance names must be without spaces and with colon char at the end
